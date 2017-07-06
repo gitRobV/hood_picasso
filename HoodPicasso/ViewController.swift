@@ -7,12 +7,76 @@
 //
 
 import UIKit
+import SceneKit
+import CoreMotion
 
 class ViewController: UIViewController {
+    
+    let motionManager = CMMotionManager()
+    let cameraNode = SCNNode()
+    
 
+    @IBOutlet weak var sceneView: SCNView!
+    @IBOutlet var viewBG: UIView!
+    @IBOutlet weak var canvas1: UIImageView!
+    @IBOutlet weak var canvas2: UIImageView!
+    @IBOutlet weak var canvas3: UIImageView!
+    var selectedImage = UIImage(named: "subway2")
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        canvas1.image = UIImage(named: "canvas")
+        canvas2.image = UIImage(named: "brick")
+        canvas3.image = UIImage(named: "concrete")
+        
+        let canvas1Tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        canvas1.isUserInteractionEnabled = true
+        canvas1.addGestureRecognizer(canvas1Tap)
+        
+        let canvas2Tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        canvas2.isUserInteractionEnabled = true
+        canvas2.addGestureRecognizer(canvas2Tap)
+        
+        let canvas3Tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped(tapGestureRecognizer:)))
+        canvas3.isUserInteractionEnabled = true
+        canvas3.addGestureRecognizer(canvas3Tap)
+        
+        buildSphere()
+        
         // Do any additional setup after loading the view, typically from a nib.
+        
+        
+        
+    }
+    
+    func update() {
+        buildSphere()
+    }
+    
+    func buildSphere() {
+        let scene = SCNScene()
+        sceneView.scene = scene
+        sceneView.showsStatistics = true
+        sceneView.allowsCameraControl = true
+        
+        let sphere = SCNSphere(radius: 75.0)
+        sphere.firstMaterial!.isDoubleSided = true
+        sphere.firstMaterial!.diffuse.contents = selectedImage
+        let sphereNode = SCNNode(geometry: sphere)
+        sphereNode.position = SCNVector3Make(0,0,0)
+        scene.rootNode.addChildNode(sphereNode)
+        
+        cameraNode.camera = SCNCamera()
+        cameraNode.position = SCNVector3Make(0, 0, 0)
+        scene.rootNode.addChildNode(cameraNode)
+    }
+    
+    
+    func imageTapped(tapGestureRecognizer: UITapGestureRecognizer)
+    {
+        let tappedImage = tapGestureRecognizer.view as! UIImageView
+        selectedImage = tappedImage.image!
+        update()
     }
 
     override func didReceiveMemoryWarning() {

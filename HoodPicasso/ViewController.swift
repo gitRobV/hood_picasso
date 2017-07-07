@@ -22,6 +22,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var canvas2: UIImageView!
     @IBOutlet weak var canvas3: UIImageView!
     var selectedImage = UIImage(named: "alley")
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -51,14 +52,14 @@ class ViewController: UIViewController {
             if manager.isDeviceMotionAvailable {
                 print("We can detect device motion!")
                 let cameraQ = OperationQueue()
-                manager.deviceMotionUpdateInterval = 1.0 / 60.0
+                manager.deviceMotionUpdateInterval = 1.0 / 30.0
                 manager.startDeviceMotionUpdates(to: cameraQ, withHandler: {
                     (data: CMDeviceMotion?, error: Error?) in
                     if let camdata = data {
                         let attitude: CMAttitude = camdata.attitude
                         self.cameraNode.eulerAngles = SCNVector3Make(
-                            Float(attitude.roll - Double.pi/2.0),
-                            Float(attitude.yaw), Float(attitude.pitch))
+                            Float(attitude.pitch - Double.pi/2.0),
+                            Float(attitude.yaw), Float(attitude.roll))
                     }
                     if let camerror = error {
                         print("myError", camerror)
@@ -71,8 +72,6 @@ class ViewController: UIViewController {
         } else {
             print("We do not have a motion manager")
         }
-        
-        
     }
     
     func update() {
